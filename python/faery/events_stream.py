@@ -106,6 +106,8 @@ class Output(typing.Generic[OutputState]):
         file_type: typing.Optional[enums.EventsFileType] = None,
         on_progress: typing.Callable[[OutputState], None] = lambda _: None,
         enforce_monotonic_timestamps: bool = True,
+        spikify: bool = False,
+        spikify_description: typing.Optional[str] = None,
     ) -> str:
         """
         Writes the stream to an event file (supports .aedat4, .es, .raw, and .dat).
@@ -157,7 +159,8 @@ class Output(typing.Generic[OutputState]):
             file_type=file_type,
             use_write_suffix=use_write_suffix,
             on_progress=on_progress,  # type: ignore
-            enforce_monotonic_timestamps=enforce_monotonic_timestamps,
+            spikify=spikify,
+            spikify_description=spikify_description,
         )
 
     def to_stdout(

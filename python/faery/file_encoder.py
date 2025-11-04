@@ -35,6 +35,8 @@ def events_to_file(
         [events_stream_state.EventsStreamState], None
     ] = lambda _: None,
     enforce_monotonic_timestamps: bool = True,
+    spikify: bool = False,
+    spikify_description: typing.Optional[str] = None,
 ) -> str:
     """Writes the stream to an event file (supports .aedat4, .es, .raw, and .dat).
 
@@ -57,6 +59,9 @@ def events_to_file(
         file_type: Override the type determination algorithm. Defaults to None.
         enforce_monotonic_timestamps: Whether to enforce that timestamps are monotonically increasing. Note that some formats
             (such as AEDAT, ES, and DAT) do not support non-monotonic timestamps. Defaults to True.
+        spikify: Indicates whether the events were generated using the spikify library.
+        spikify_description: Description to add to the AEDAT file when spikify is used. A description of the sensors on the
+            different x,y axes.
 
     Returns:
         The original t0 as a timecode if the file type is ES, EVT (.raw), or DAT, and if `zero_t0` is true. 0 as a timecode otherwise.
@@ -136,7 +141,16 @@ def events_to_file(
                                             attribute_type="int", value=dimensions[1]
                                         ),
                                         "source": aedat.DescriptionAttribute(
-                                            attribute_type="string", value="faery"
+                                            attribute_type="string", 
+                                            value="faery" if not spikify else "faery spikified"
+                                        ),
+                                        "sensorDescription": aedat.DescriptionAttribute(
+                                            attribute_type="string",
+                                            value=(
+                                                "DVS sensor"
+                                                if spikify_description is None
+                                                else spikify_description
+                                            ),
                                         ),
                                     },
                                     nodes=[],
